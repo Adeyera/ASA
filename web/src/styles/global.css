@@ -1,0 +1,240 @@
+@font-face {
+  font-family: 'Canicule Display';
+  src: url('/fonts/Canicule-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Canicule Display';
+  src: url('/fonts/Canicule-Medium.otf') format('opentype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Canicule Display';
+  src: url('/fonts/Canicule-SemiBold.otf') format('opentype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Canicule Display';
+  src: url('/fonts/Canicule-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  /* Àṣà palette */
+  --color-bg: #f2e9da;
+  --color-bg-secondary: #ece1cf;
+  --color-bg-card: #fbf6ec;
+  --color-surface: #e7dcc8;
+  --color-border: rgba(26, 20, 15, 0.12);
+  --color-border-hover: rgba(26, 20, 15, 0.28);
+
+  --color-text-primary: #1a140f;
+  --color-text-secondary: #5c5046;
+  --color-text-muted: #8c8074;
+
+  --color-accent: #cb4b1e;
+  --color-accent-light: #dd6033;
+  --color-accent-dark: #b53f15;
+
+  --color-terracotta: #cb4b1e;
+  --color-gold: #e2a02e;
+  --color-indigo: #0c1430;
+  --color-forest: #3a7a5a;
+
+  --color-ink: #1a140f;
+  --color-dark: #0c0c0e;
+  --color-footer: #161210;
+  --color-cream: #f2e9da;
+
+  --color-success: #2f9e5f;
+  --color-error: #d44b4b;
+  --color-warning: #e2a02e;
+
+  --glass-bg: rgba(251, 246, 236, 0.72);
+  --glass-border: rgba(26, 20, 15, 0.1);
+  --glass-shadow: 0 12px 40px rgba(26, 20, 15, 0.14);
+
+  --shadow-sm: 0 2px 8px rgba(26, 20, 15, 0.06);
+  --shadow-md: 0 8px 24px rgba(26, 20, 15, 0.1);
+  --shadow-lg: 0 20px 50px rgba(26, 20, 15, 0.16);
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+
+  --font-sans: 'Hanken Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-display: 'Canicule Display', 'Bodoni Moda', Georgia, serif;
+  --font-serif: 'Bodoni Moda', Georgia, serif;
+
+  --transition-fast: 150ms ease;
+  --transition-base: 250ms ease;
+  --transition-slow: 400ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-sans);
+  background: var(--color-bg);
+  color: var(--color-text-primary);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: #cb4b1e;
+  color: #f2e9da;
+}
+
+a {
+  color: var(--color-accent);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+a:hover {
+  color: var(--color-accent-light);
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+button {
+  cursor: pointer;
+  font-family: inherit;
+  border: none;
+  outline: none;
+}
+
+input,
+textarea,
+select {
+  font-family: inherit;
+  font-size: inherit;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-text-muted);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-secondary);
+}
+
+/* Àṣà keyframes */
+@keyframes asaFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes asaUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes asaDrawer {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+@keyframes asaFade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes asaRise {
+  from { transform: translateY(0); }
+  to { transform: translateY(-50%); }
+}
+
+/* legacy aliases kept for existing pages */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes riseIn {
+  from { opacity: 0; transform: translateY(40px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Scroll-reveal: rise up + fade as element enters viewport */
+.reveal-up {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+.reveal-up.in-view {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--color-bg-card) 25%,
+    var(--color-surface) 50%,
+    var(--color-bg-card) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--radius-sm);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
