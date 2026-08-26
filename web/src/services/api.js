@@ -1,7 +1,13 @@
 import axios from 'axios';
 
+// In production (Vercel), hit the Render backend directly.
+// In local dev, Vite proxies /api → localhost:5050.
+const API_BASE = import.meta.env.PROD
+  ? 'https://asa-3mdd.onrender.com/api'
+  : '/api';
+
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: API_BASE,
   headers: { 'Content-Type': 'application/json' },
 });
 
