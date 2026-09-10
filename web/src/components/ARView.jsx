@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import * as THREE from 'three';
 import { XREstimatedLight } from 'three/examples/jsm/webxr/XREstimatedLight.js';
+import { resolveImageUrl } from '../utils/imageUrl';
 
 // True WebXR AR: surface detection via hit-test, tap to anchor artwork
 // at real-world scale (cm -> meters). Requires HTTPS + ARCore-capable
@@ -93,10 +94,8 @@ export default function ARView({ artwork, session, overlayRoot, onClose }) {
       sessionRef.current = session;
       session.addEventListener('end', onSessionEnd);
 
-      // Normalize absolute backend URLs (mixed content / wrong host on
-      // phone) to relative paths served through the Vite proxy.
       const rawUrl = artwork.images?.[0]?.url || artwork.thumbnail || '';
-      const imgUrl = rawUrl.replace(/^https?:\/\/(localhost|127\.0\.0\.1|\d+\.\d+\.\d+\.\d+):\d+/, '');
+      const imgUrl = resolveImageUrl(rawUrl);
       let texture;
       try {
         const loader = new THREE.TextureLoader();

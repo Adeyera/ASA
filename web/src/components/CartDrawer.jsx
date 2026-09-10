@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
+import { resolveImageUrl } from '../utils/imageUrl';
 
 export default function CartDrawer() {
   const { items, removeItem, clearCart, totalNgn, totalUsd, showCart, setShowCart, count } = useCart();
@@ -27,7 +28,7 @@ export default function CartDrawer() {
               {items.map((item) => (
                 <div key={item.id} className="cart-item">
                   <div className="cart-item-img">
-                    <img src={item.image} alt={item.title} />
+                    <img src={resolveImageUrl(item.image)} alt={item.title} referrerPolicy="no-referrer" />
                   </div>
                   <div className="cart-item-info">
                     <strong>{item.title}</strong>

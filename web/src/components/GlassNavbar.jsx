@@ -7,13 +7,26 @@ export default function GlassNavbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
-  const user = JSON.parse(localStorage.getItem('user') || 'null');
+  const [user, setUser] = useState(() => JSON.parse(localStorage.getItem('user') || 'null'));
+
+  useEffect(() => {
+    setUser(JSON.parse(localStorage.getItem('user') || 'null'));
+  }, [location]);
+
+  useEffect(() => {
+    const handleStorage = () => {
+      setUser(JSON.parse(localStorage.getItem('user') || 'null'));
+    };
+    window.addEventListener('storage', handleStorage);
+    return () => window.removeEventListener('storage', handleStorage);
+  }, []);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener('scroll', onScroll);
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
+
 
   useEffect(() => {
     setMobileOpen(false);

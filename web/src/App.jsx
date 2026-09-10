@@ -7,6 +7,7 @@ import Footer from './components/Footer';
 import Catalog from './pages/Catalog';
 import DiscoverArtworks from './pages/DiscoverArtworks';
 import ExploreArtists from './pages/ExploreArtists';
+import ArtistProfile from './pages/ArtistProfile';
 import ArtworkDetail from './pages/ArtworkDetail';
 import ArtistDashboard from './pages/ArtistDashboard';
 import CreateArtwork from './pages/CreateArtwork';
@@ -28,6 +29,8 @@ export default function App() {
             <Route path="/" element={<Catalog />} />
             <Route path="/discover" element={<DiscoverArtworks />} />
             <Route path="/artists" element={<ExploreArtists />} />
+            <Route path="/artist/:id" element={<ArtistProfile />} />
+            <Route path="/artists/:id" element={<ArtistProfile />} />
             <Route path="/artwork/:id" element={<ArtworkDetail />} />
             <Route path="/dashboard" element={<ArtistDashboard />} />
             <Route path="/create" element={<CreateArtwork />} />
@@ -43,3 +46,4 @@ export default function App() {
     </CartProvider>
   );
 }
+

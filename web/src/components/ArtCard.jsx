@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { resolveImageUrl } from '../utils/imageUrl';
 
 export default function ArtCard({ artwork, index = 0, onSelect }) {
-  const imgUrl = artwork.images?.[0]?.url || artwork.thumbnail || '';
+  const rawImgUrl = artwork.images?.[0]?.url || artwork.thumbnail || '';
+  const imgUrl = resolveImageUrl(rawImgUrl);
   const [liked, setLiked] = useState(false);
 
   useEffect(() => {
@@ -20,8 +22,6 @@ export default function ArtCard({ artwork, index = 0, onSelect }) {
     setLiked(!liked);
   };
 
-
-
   return (
     <article
       className="art-card"
@@ -33,8 +33,9 @@ export default function ArtCard({ artwork, index = 0, onSelect }) {
       }}
     >
       <div className="art-card-image">
-        <img src={imgUrl} alt={artwork.title} loading="lazy" />
+        <img src={imgUrl} alt={artwork.title} loading="lazy" referrerPolicy="no-referrer" />
         <span className="art-card-ref">{artwork.title}</span>
+
         {artwork.status === 'Sold' && (
           <span className="art-card-badge sold">Sold</span>
         )}
@@ -52,7 +53,15 @@ export default function ArtCard({ artwork, index = 0, onSelect }) {
       <div className="art-card-body">
         <h3 className="art-card-title">{artwork.title}</h3>
         <div className="art-card-row">
-          <span className="art-card-artist">
+          <span
+            className="art-card-artist"
+            onClick={(e) => {
+              if (artwork.artist?._id) {
+                e.stopPropagation();
+                window.location.href = `/artist/${artwork.artist._id}`;
+              }
+            }}
+          >
             {artwork.artist?.name || 'Unknown Artist'}
           </span>
           <span className="art-card-price">

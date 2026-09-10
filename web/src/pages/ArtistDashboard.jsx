@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { artworks, orders } from '../services/api';
+import { resolveImageUrl } from '../utils/imageUrl';
 
 export default function ArtistDashboard() {
   const navigate = useNavigate();
@@ -117,7 +118,7 @@ export default function ArtistDashboard() {
                 <div key={art._id} className="table-row">
                   <div className="row-title">
                     <div className="row-thumb">
-                      <img src={art.images?.[0]?.url || art.thumbnail} alt="" />
+                      <img src={resolveImageUrl(art.images?.[0]?.url || art.thumbnail)} alt="" referrerPolicy="no-referrer" />
                     </div>
                     <span>{art.title}</span>
                   </div>

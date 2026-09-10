@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { orders } from '../services/api';
+import { resolveImageUrl } from '../utils/imageUrl';
 
 export default function Checkout() {
   const navigate = useNavigate();
@@ -95,7 +96,7 @@ export default function Checkout() {
           {items.map((item) => (
             <div key={item.id} className="checkout-item">
               <div className="checkout-item-img">
-                <img src={item.image} alt={item.title} />
+                <img src={resolveImageUrl(item.image)} alt={item.title} referrerPolicy="no-referrer" />
               </div>
               <div>
                 <strong>{item.title}</strong>

@@ -1,13 +1,44 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { auth } from '../services/api';
 
 export default function Login() {
   const navigate = useNavigate();
-  const [isLogin, setIsLogin] = useState(true);
-  const [form, setForm] = useState({ name: '', email: '', password: '', role: 'buyer' });
+  const [searchParams] = useSearchParams();
+  const modeParam = searchParams.get('mode');
+  const roleParam = searchParams.get('role');
+
+  const [isLogin, setIsLogin] = useState(modeParam !== 'signup');
+  const [form, setForm] = useState({
+    name: '',
+    email: '',
+    password: '',
+    role: roleParam === 'artist' ? 'artist' : 'buyer',
+  });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+
+  // If already logged in, redirect away from login page
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem('user') || 'null');
+    const token = localStorage.getItem('token');
+    if (user && token) {
+      if (user.role === 'artist') {
+        navigate('/dashboard');
+      } else {
+        navigate('/');
+      }
+    }
+  }, [navigate]);
+
+  useEffect(() => {
+    if (modeParam === 'signup') {
+      setIsLogin(false);
+    }
+    if (roleParam === 'artist') {
+      setForm((f) => ({ ...f, role: 'artist' }));
+    }
+  }, [modeParam, roleParam]);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -28,13 +59,19 @@ export default function Login() {
 
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
-      navigate('/');
+
+      if (data.user?.role === 'artist') {
+        navigate('/dashboard');
+      } else {
+        navigate('/');
+      }
     } catch (err) {
-      setError(err.response?.data?.message || 'Something went wrong');
+      setError(err.response?.data?.message || 'Something went wrong. Please check your credentials.');
     } finally {
       setLoading(false);
     }
   };
+
 
   return (
     <div className="login-page">

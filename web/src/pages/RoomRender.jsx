@@ -1,6 +1,7 @@
 import React, { useState, useRef, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { artworks } from '../services/api';
+import { artworks, API_BASE } from '../services/api';
+import { resolveImageUrl } from '../utils/imageUrl';
 
 const REAL_W = 60;
 const REAL_H = 78;
@@ -33,7 +34,9 @@ export default function RoomRender() {
     fetch();
   }, [id]);
 
-  const artImgUrl = artwork?.images?.[0]?.url || artwork?.thumbnail || '';
+  const rawArtImg = artwork?.images?.[0]?.url || artwork?.thumbnail || '';
+  const artImgUrl = resolveImageUrl(rawArtImg);
+
 
   const roomBase64 = useCallback(() => {
     return new Promise((resolve, reject) => {
@@ -81,7 +84,7 @@ export default function RoomRender() {
       };
       img.onerror = () => {
         // CORS rejected — fetch through our backend image proxy to bypass CORS
-        const proxyUrl = `/api/render/image-proxy?url=${encodeURIComponent(artImgUrl)}`;
+        const proxyUrl = `${API_BASE}/render/image-proxy?url=${encodeURIComponent(artImgUrl)}`;
         fetch(proxyUrl)
           .then((r) => {
             if (!r.ok) throw new Error(`HTTP ${r.status}`);
@@ -160,7 +163,7 @@ export default function RoomRender() {
       const nx = +(px / stage.clientWidth).toFixed(3);
       const ny = +(py / stage.clientHeight).toFixed(3);
 
-      const res = await fetch('/api/render/render-room', {
+      const res = await fetch(`${API_BASE}/render/render-room`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -171,6 +174,7 @@ export default function RoomRender() {
           mimeType: 'image/jpeg',
         }),
       });
+
 
       if (!res.ok) {
         const j = await res.json().catch(() => ({}));

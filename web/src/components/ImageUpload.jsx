@@ -1,11 +1,16 @@
-import React, { useState, useRef } from 'react';
-import axios from 'axios';
+import React, { useState, useRef, useEffect } from 'react';
+import { upload } from '../services/api';
+import { resolveImageUrl } from '../utils/imageUrl';
 
 export default function ImageUpload({ onUpload, currentUrl }) {
   const [preview, setPreview] = useState(currentUrl || '');
   const [uploading, setUploading] = useState(false);
   const [dragOver, setDragOver] = useState(false);
   const inputRef = useRef(null);
+
+  useEffect(() => {
+    setPreview(currentUrl || '');
+  }, [currentUrl]);
 
   const handleFile = async (file) => {
     if (!file) return;
@@ -28,22 +33,16 @@ export default function ImageUpload({ onUpload, currentUrl }) {
       const formData = new FormData();
       formData.append('image', file);
 
-      const token = localStorage.getItem('token');
-      const { data } = await axios.post('/api/upload', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
+      const { data } = await upload.image(formData);
       onUpload(data.url);
     } catch (err) {
-      alert('Upload failed');
-      setPreview('');
+      alert(err.response?.data?.message || 'Upload failed. Please check network connection.');
+      setPreview(currentUrl || '');
     } finally {
       setUploading(false);
     }
   };
+
 
   const handleDrop = (e) => {
     e.preventDefault();
@@ -78,7 +77,7 @@ export default function ImageUpload({ onUpload, currentUrl }) {
         </div>
       ) : preview ? (
         <div className="upload-preview">
-          <img src={preview} alt="Preview" />
+          <img src={resolveImageUrl(preview)} alt="Preview" referrerPolicy="no-referrer" />
           <button
             className="upload-change"
             onClick={(e) => {

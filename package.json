@@ -1,0 +1,7 @@
+{
+  "name": "asa-art",
+  "private": true,
+  "scripts": {
+    "dev": "node scripts/dev.mjs"
+  }
+}

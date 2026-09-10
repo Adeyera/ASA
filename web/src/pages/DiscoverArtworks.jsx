@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { artworks } from '../services/api';
 import ArtworkModal from '../components/ArtworkModal';
+import { resolveImageUrl } from '../utils/imageUrl';
 
 const STYLES_ALL = 'All';
 
@@ -175,7 +176,8 @@ export default function DiscoverArtworks() {
         ) : (
           <div className="discover-grid">
             {artworkList.map((art, i) => {
-              const imgUrl = art.images?.[0]?.url || art.thumbnail || '';
+              const rawImgUrl = art.images?.[0]?.url || art.thumbnail || '';
+              const imgUrl = resolveImageUrl(rawImgUrl);
               const liked = JSON.parse(localStorage.getItem('liked') || '[]').includes(art._id);
               return (
                 <article
@@ -185,7 +187,7 @@ export default function DiscoverArtworks() {
                   onClick={() => setSelected({ artwork: art, index: i })}
                 >
                   <div className="discover-card-img">
-                    <img src={imgUrl} alt={art.title} loading="lazy" />
+                    <img src={imgUrl} alt={art.title} loading="lazy" referrerPolicy="no-referrer" />
                     <div className="discover-card-overlay">
                       <span className="discover-card-cta">View Artwork</span>
                     </div>

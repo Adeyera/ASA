@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { artworks } from '../services/api';
 import ArtworkModal from '../components/ArtworkModal';
 import AuthGateModal from '../components/AuthGateModal';
+import { resolveImageUrl } from '../utils/imageUrl';
 
 // Àṣà scroll-column config (exact reference values).
 const COLUMNS = [32, 26, 38, 24, 30];
@@ -31,6 +32,16 @@ export default function Catalog() {
   const [selected, setSelected] = useState(null); // { artwork, index }
   const [showAuthGate, setShowAuthGate] = useState(false);
   const gridRef = useRef(null);
+  const user = JSON.parse(localStorage.getItem('user') || 'null');
+
+  const handleSellArt = () => {
+    if (user) {
+      navigate('/create');
+    } else {
+      navigate('/login?mode=signup&role=artist');
+    }
+  };
+
 
   const fetchArtworks = useCallback(async (page = 1) => {
     setLoading(true);
@@ -109,9 +120,9 @@ export default function Catalog() {
           <a href="#collection" className="hero-btn primary">
             Explore the collection
           </a>
-          <a href="/login" className="hero-btn ghost">
+          <button onClick={handleSellArt} className="hero-btn ghost">
             Sell your art
-          </a>
+          </button>
         </div>
 
         {/* Animated Hero Frames */}
@@ -174,7 +185,7 @@ export default function Catalog() {
                     >
                       {loop.map((art, j) => {
                         const realIndex = artworkList.findIndex((a) => a._id === art._id);
-                        const imgUrl = art.images?.[0]?.url || art.thumbnail || '';
+                        const imgUrl = resolveImageUrl(art.images?.[0]?.url || art.thumbnail || '');
                         return (
                           <button
                             key={art._id + '-' + j}
@@ -182,7 +193,7 @@ export default function Catalog() {
                             style={{ aspectRatio: ASPECTS[realIndex % ASPECTS.length] }}
                             onClick={() => setSelected({ artwork: art, index: realIndex })}
                           >
-                            <img src={imgUrl} alt={art.title} loading="lazy" />
+                            <img src={imgUrl} alt={art.title} loading="lazy" referrerPolicy="no-referrer" />
                             <span className="works-tile-label">
                               {art.title}
                             </span>

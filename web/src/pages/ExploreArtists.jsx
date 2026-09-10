@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import { artworks } from '../services/api';
 import ArtCard from '../components/ArtCard';
 import ArtworkModal from '../components/ArtworkModal';
+import { resolveImageUrl } from '../utils/imageUrl';
 
 // Artists are derived client-side from the artwork feed (no artist
 // endpoint yet): group works by their author.
@@ -25,7 +27,7 @@ export default function ExploreArtists() {
       const a = w.artist;
       if (!a?._id) return;
       if (!map.has(a._id)) {
-        map.set(a._id, { id: a._id, name: a.name || 'Unknown Artist', works: [] });
+        map.set(a._id, { id: a._id, name: a.name || 'Unknown Artist', avatar: a.avatar || '', works: [] });
       }
       map.get(a._id).works.push(w);
     });
@@ -60,31 +62,44 @@ export default function ExploreArtists() {
       ) : (
         <div className="artists-grid">
           {artists.map((a) => (
-            <button
+            <div
               key={a.id}
               className={`artist-card ${active === a.id ? 'active' : ''}`}
-              onClick={() => setActive(active === a.id ? null : a.id)}
             >
-              <div className="artist-thumbs">
+              <div className="artist-thumbs" onClick={() => setActive(active === a.id ? null : a.id)}>
                 {a.works.slice(0, 3).map((w) => (
                   <img
                     key={w._id}
-                    src={w.images?.[0]?.url || w.thumbnail || ''}
+                    src={resolveImageUrl(w.images?.[0]?.url || w.thumbnail || '')}
                     alt=""
+                    referrerPolicy="no-referrer"
                   />
                 ))}
               </div>
               <div className="artist-info">
-                <span className="artist-avatar">{initials(a.name)}</span>
-                <div>
+                {a.avatar ? (
+                  <img
+                    src={resolveImageUrl(a.avatar)}
+                    alt={a.name}
+                    className="artist-avatar-img"
+                    referrerPolicy="no-referrer"
+                  />
+                ) : (
+                  <span className="artist-avatar">{initials(a.name)}</span>
+                )}
+                <div className="artist-text">
                   <h3 className="artist-name">{a.name}</h3>
                   <p className="artist-count">{a.works.length} works</p>
                 </div>
+                <Link to={`/artist/${a.id}`} className="btn-artist-profile-link">
+                  Profile →
+                </Link>
               </div>
-            </button>
+            </div>
           ))}
         </div>
       )}
+
 
       {activeArtist && (
         <section className="artist-works">
@@ -181,6 +196,16 @@ export default function ExploreArtists() {
           gap: 14px;
           padding: 16px 18px;
         }
+        .artist-text {
+          flex: 1;
+        }
+        .artist-avatar-img {
+          width: 44px;
+          height: 44px;
+          border-radius: 50%;
+          object-fit: cover;
+          flex-shrink: 0;
+        }
         .artist-avatar {
           width: 44px;
           height: 44px;
@@ -201,6 +226,21 @@ export default function ExploreArtists() {
           color: var(--color-text-primary);
         }
         .artist-count { color: var(--color-text-muted); font-size: 0.82rem; }
+        .btn-artist-profile-link {
+          font-size: 0.78rem;
+          font-weight: 600;
+          color: var(--color-accent);
+          padding: 6px 12px;
+          border-radius: 999px;
+          background: rgba(203, 75, 30, 0.08);
+          transition: all var(--transition-fast);
+          white-space: nowrap;
+        }
+        .btn-artist-profile-link:hover {
+          background: var(--color-accent);
+          color: #f2e9da;
+        }
+
 
         .artist-works {
           margin-top: 64px;

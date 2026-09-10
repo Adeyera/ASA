@@ -8,6 +8,7 @@ const {
   getMe,
   updateProfile,
   becomeArtist,
+  getUserById,
 } = require('../controllers/authController');
 
 const router = express.Router();
@@ -36,5 +37,7 @@ router.post(
 router.get('/me', protect, getMe);
 router.put('/profile', protect, updateProfile);
 router.put('/become-artist', protect, becomeArtist);
+router.get('/users/:id', getUserById);
 
 module.exports = router;
+

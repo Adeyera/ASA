@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { artworks } from '../services/api';
+import { auth, artworks } from '../services/api';
 import ImageUpload from '../components/ImageUpload';
 
 export default function CreateArtwork() {
@@ -19,6 +19,14 @@ export default function CreateArtwork() {
   });
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
+
+  // Check auth on mount
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      navigate('/login?mode=signup&role=artist');
+    }
+  }, [navigate]);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -48,6 +56,15 @@ export default function CreateArtwork() {
     setError('');
 
     try {
+      // Ensure user has artist role
+      const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+      if (currentUser.role !== 'artist') {
+        try {
+          const { data } = await auth.becomeArtist();
+          localStorage.setItem('user', JSON.stringify(data.user));
+        } catch {}
+      }
+
       await artworks.create({
         status: form.status,
         title: form.title,
@@ -73,6 +90,7 @@ export default function CreateArtwork() {
       setSubmitting(false);
     }
   };
+
 
   return (
     <div className="create-artwork-page">

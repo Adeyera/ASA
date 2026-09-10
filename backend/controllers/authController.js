@@ -98,3 +98,16 @@ exports.becomeArtist = async (req, res, next) => {
     next(error);
   }
 };
+
+exports.getUserById = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.params.id).select('name avatar bio location phone role isVerified createdAt');
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    res.status(200).json({ success: true, user });
+  } catch (error) {
+    next(error);
+  }
+};
+

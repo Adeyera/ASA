@@ -1,8 +1,6 @@
 import axios from 'axios';
 
-// In production (Vercel), hit the Render backend directly.
-// In local dev, Vite proxies /api → localhost:5050.
-const API_BASE = import.meta.env.PROD
+export const API_BASE = import.meta.env.PROD
   ? 'https://asa-3mdd.onrender.com/api'
   : '/api';
 
@@ -37,9 +35,11 @@ export const auth = {
   signup: (data) => api.post('/auth/signup', data),
   login: (data) => api.post('/auth/login', data),
   getMe: () => api.get('/auth/me'),
+  getUserById: (id) => api.get(`/auth/users/${id}`),
   updateProfile: (data) => api.put('/auth/profile', data),
   becomeArtist: () => api.put('/auth/become-artist'),
 };
+
 
 export const artworks = {
   getAll: (params) => api.get('/artworks', { params }),
@@ -73,4 +73,12 @@ export const arSessions = {
   update: (id, data) => api.put(`/ar-sessions/${id}`, data),
 };
 
+export const upload = {
+  image: (formData) =>
+    api.post('/upload', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    }),
+};
+
 export default api;
+

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, lazy, Suspense } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { artworks, reviews as reviewsApi } from '../services/api';
 import { useCart } from '../context/CartContext';
+import { resolveImageUrl } from '../utils/imageUrl';
 
 const ARView = lazy(() => import('../components/ARView'));
 
@@ -128,10 +129,6 @@ export default function ArtworkDetail() {
   }
 
   const images = artwork.images || [];
-  // Old records store absolute backend URLs; make them relative so they
-  // load through the Vite proxy (avoids mixed content on phones).
-  const fixUrl = (u) =>
-    (u || '').replace(/^https?:\/\/(localhost|127\.0\.0\.1|\d+\.\d+\.\d+\.\d+):\d+/, '');
 
   return (
     <div className="artwork-detail">
@@ -143,8 +140,9 @@ export default function ArtworkDetail() {
         <div className="detail-gallery">
           <div className="detail-main-image">
             <img
-              src={fixUrl(images[activeImage]?.url || artwork.thumbnail)}
+              src={resolveImageUrl(images[activeImage]?.url || artwork.thumbnail)}
               alt={artwork.title}
+              referrerPolicy="no-referrer"
             />
           </div>
           <div className="preview-actions">
@@ -171,7 +169,7 @@ export default function ArtworkDetail() {
                   className={`thumb ${activeImage === i ? 'active' : ''}`}
                   onClick={() => setActiveImage(i)}
                 >
-                  <img src={fixUrl(img.url)} alt={`${artwork.title} ${i + 1}`} />
+                  <img src={resolveImageUrl(img.url)} alt={`${artwork.title} ${i + 1}`} referrerPolicy="no-referrer" />
                 </button>
               ))}
             </div>

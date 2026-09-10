@@ -1,7 +1,19 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function Footer() {
+  const navigate = useNavigate();
+  const user = JSON.parse(localStorage.getItem('user') || 'null');
+
+  const handleSellArt = (e) => {
+    e.preventDefault();
+    if (user) {
+      navigate('/create');
+    } else {
+      navigate('/login?mode=signup&role=artist');
+    }
+  };
+
   return (
     <footer className="site-footer">
       <div className="footer-inner">
@@ -16,9 +28,9 @@ export default function Footer() {
           <div className="footer-cols">
             <div className="footer-col">
               <span className="footer-col-title">Explore</span>
-              <Link to="/">Artworks</Link>
+              <Link to="/discover">Artworks</Link>
               <Link to="/artists">Artists</Link>
-              <Link to="/login">Sell your art</Link>
+              <a href="/create" onClick={handleSellArt}>Sell your art</a>
             </div>
             <div className="footer-col">
               <span className="footer-col-title">Company</span>

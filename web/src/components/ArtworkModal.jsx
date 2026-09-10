@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
+import { resolveImageUrl } from '../utils/imageUrl';
 
 // Galekto-inspired select overlay: REF label, prev/next navigation,
 // large image + meta panel, "Buy Original" CTA. Light themed, no blue.
@@ -22,7 +23,8 @@ export default function ArtworkModal({ artwork, index, total, onClose, onPrev, o
   }, [onClose, onPrev, onNext]);
 
   if (!artwork) return null;
-  const imgUrl = artwork.images?.[0]?.url || artwork.thumbnail || '';
+  const rawImg = artwork.images?.[0]?.url || artwork.thumbnail || '';
+  const imgUrl = resolveImageUrl(rawImg);
 
   return (
     <div className="awm-backdrop" onClick={onClose}>
@@ -36,7 +38,7 @@ export default function ArtworkModal({ artwork, index, total, onClose, onPrev, o
             ←
           </button>
           <div className="awm-image">
-            <img src={imgUrl} alt={artwork.title} />
+            <img src={imgUrl} alt={artwork.title} referrerPolicy="no-referrer" />
           </div>
           <button className="awm-nav next" onClick={onNext} aria-label="Next">
             →
@@ -52,7 +54,17 @@ export default function ArtworkModal({ artwork, index, total, onClose, onPrev, o
           </div>
 
           <h2 className="awm-title">{artwork.title}</h2>
-          <p className="awm-artist">by {artwork.artist?.name || 'Unknown Artist'}</p>
+          <p className="awm-artist">
+            by{' '}
+            {artwork.artist?._id ? (
+              <Link to={`/artist/${artwork.artist._id}`} onClick={onClose}>
+                {artwork.artist?.name || 'Unknown Artist'}
+              </Link>
+            ) : (
+              <span>{artwork.artist?.name || 'Unknown Artist'}</span>
+            )}
+          </p>
+
 
           {artwork.description && (
             <p className="awm-desc">{artwork.description}</p>
