@@ -3,8 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { artworks, API_BASE } from '../services/api';
 import { resolveImageUrl } from '../utils/imageUrl';
 
-const REAL_W = 60;
-const REAL_H = 78;
+
 
 export default function RoomRender() {
   const { id } = useParams();
@@ -163,18 +162,38 @@ export default function RoomRender() {
       const nx = +(px / stage.clientWidth).toFixed(3);
       const ny = +(py / stage.clientHeight).toFixed(3);
 
-      const res = await fetch(`${API_BASE}/render/render-room`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          roomBase64: r1,
-          artBase64: a1,
-          position: { x: nx, y: ny },
-          dimensionsCm: { w: Math.round(REAL_W * scale), h: Math.round(REAL_H * scale) },
-          mimeType: 'image/jpeg',
-        }),
+      // Use actual artwork dimensions (fallback to reasonable defaults)
+      const realW = artwork?.dimensions?.width || 60;
+      const realH = artwork?.dimensions?.height || 78;
+
+      const payload = JSON.stringify({
+        roomBase64: r1,
+        artBase64: a1,
+        position: { x: nx, y: ny },
+        dimensionsCm: { w: Math.round(realW * scale), h: Math.round(realH * scale) },
+        mimeType: 'image/jpeg',
       });
 
+      // Retry up to 2 times — Render free tier may need a cold-start wake-up
+      let res;
+      for (let attempt = 0; attempt < 2; attempt++) {
+        try {
+          res = await fetch(`${API_BASE}/render/render-room`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: payload,
+          });
+          break; // success — exit retry loop
+        } catch (fetchErr) {
+          if (attempt === 0) {
+            setStatus('Server is waking up — retrying in a few seconds…');
+            setStatusType('');
+            await new Promise((r) => setTimeout(r, 4000));
+          } else {
+            throw fetchErr;
+          }
+        }
+      }
 
       if (!res.ok) {
         const j = await res.json().catch(() => ({}));
@@ -199,9 +218,9 @@ export default function RoomRender() {
       const reason = err.message || String(err) || 'Unknown error';
       const isNetworkErr = reason === 'Failed to fetch' || reason.includes('NetworkError');
       if (isNetworkErr) {
-        setStatus('Cannot reach the server. Make sure the backend is running on port 5050.');
+        setStatus('Cannot reach the server — it may be starting up. Please try again in 30 seconds.');
       } else if (reason.includes('GEMINI_API_KEY not configured')) {
-        setStatus('GEMINI_API_KEY is not set in the server\'s .env file.');
+        setStatus('GEMINI_API_KEY is not set in the server environment.');
       } else {
         setStatus(`Render failed: ${reason}`);
       }

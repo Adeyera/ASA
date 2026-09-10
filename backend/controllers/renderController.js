@@ -29,12 +29,17 @@ exports.renderRoom = async (req, res, next) => {
       : 'about 60 cm wide';
 
     const prompt =
-      `The first image is a photo of a room. The second image is a framed artwork. ` +
-      `Hang the framed artwork on the wall in the room, positioned around ${where}. ` +
-      `The artwork is ${dim} in real life — render it at a believable physical scale for that wall. ` +
-      `Match the room's perspective so the frame sits flat against the wall, match the existing lighting and colour temperature, ` +
-      `and add a soft, realistic contact shadow consistent with the room's light direction. ` +
-      `Do not change anything else in the room. Output a single photorealistic image.`;
+      `You are given two images. Image 1 is a photograph of a real room. Image 2 is a framed artwork.\n\n` +
+      `TASK: Composite the artwork onto the wall of the room so it looks like it is physically hanging there.\n\n` +
+      `PLACEMENT: Hang the artwork at ${where} of the wall.\n` +
+      `SCALE: The artwork is ${dim} in real life. Render it at a proportionally correct size relative to the room's furniture and architecture.\n\n` +
+      `CRITICAL RULES:\n` +
+      `- Do NOT repaint, stylize, distort, or alter the artwork image in any way. Preserve its exact content, colours, and details.\n` +
+      `- Do NOT change, repaint, or modify anything else in the room photo. Keep all furniture, walls, lighting, and objects exactly as they are.\n` +
+      `- Match the room's perspective so the artwork frame sits flush and flat against the wall surface.\n` +
+      `- Match the room's existing lighting direction, colour temperature, and ambient light on the artwork frame.\n` +
+      `- Add a subtle, realistic shadow behind/below the frame consistent with the room's light source.\n` +
+      `- The output must be a single photorealistic image that looks like an actual photograph of the room with the artwork hung on the wall.`;
 
     const response = await ai.models.generateContent({
       model: IMAGE_MODEL,
@@ -43,8 +48,12 @@ exports.renderRoom = async (req, res, next) => {
         { inlineData: { mimeType: 'image/png', data: artBase64 } },
         { text: prompt },
       ],
-      config: { responseModalities: ['IMAGE'] },
+      config: {
+        responseModalities: ['IMAGE'],
+        temperature: 0.2,
+      },
     });
+
 
     const parts = response.candidates?.[0]?.content?.parts || [];
     const img = parts.find(p => p.inlineData?.mimeType?.startsWith('image/'));
